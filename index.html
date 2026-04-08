@@ -16,18 +16,17 @@
     #canvas-container { position: fixed; inset: 0; z-index: 0; }
     canvas { display: block; width: 100% !important; height: 100% !important; }
 
+    /* ── Bottom Bar ── */
     #ui {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
       padding: 28px 36px;
       display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
-      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 100%);
       pointer-events: none;
     }
     #ui-left { pointer-events: all; display: flex; flex-direction: column; gap: 14px; }
-    #wordmark {
-      font-size: 11px; font-weight: 500; letter-spacing: 0.35em;
-      text-transform: uppercase; color: rgba(255,255,255,0.3);
-    }
+    #wordmark { font-size: 11px; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.28); }
+
     #upload-btn {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 12px 22px;
@@ -45,43 +44,144 @@
       opacity: 0.55; filter: invert(1); border-radius: 20px;
     }
 
+    /* ── Threshold Panel ── */
+    #threshold-panel {
+      pointer-events: all;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+    .ctrl-label {
+      font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(255,255,255,0.28); text-align: center;
+    }
+
+    /* Custom range slider */
+    .slider-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .slider-value {
+      font-size: 18px;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.75);
+      font-variant-numeric: tabular-nums;
+      min-width: 36px;
+      text-align: center;
+    }
+    input[type="range"]#thresh-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 140px;
+      height: 2px;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+    }
+    /* Track */
+    input[type="range"]#thresh-slider::-webkit-slider-runnable-track {
+      height: 2px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.12);
+    }
+    input[type="range"]#thresh-slider::-moz-range-track {
+      height: 2px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.12);
+    }
+    /* Thumb */
+    input[type="range"]#thresh-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      margin-top: -6px;
+      box-shadow: 0 0 10px rgba(160,80,255,0.9), 0 0 22px rgba(160,80,255,0.45);
+      transition: box-shadow 150ms;
+    }
+    input[type="range"]#thresh-slider:hover::-webkit-slider-thumb {
+      box-shadow: 0 0 14px rgba(160,80,255,1.0), 0 0 30px rgba(160,80,255,0.65);
+    }
+    input[type="range"]#thresh-slider::-moz-range-thumb {
+      width: 14px; height: 14px; border: none;
+      border-radius: 50%; background: #fff;
+      box-shadow: 0 0 10px rgba(160,80,255,0.9), 0 0 22px rgba(160,80,255,0.45);
+    }
+    /* Filled track (via CSS gradient trick) */
+    #thresh-track-bg {
+      position: relative;
+      width: 140px;
+      height: 2px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.1);
+      margin-bottom: -2px;
+    }
+    #thresh-track-fill {
+      position: absolute; top:0; left:0; height:100%;
+      border-radius: 2px;
+      background: linear-gradient(to right, #5533ff, #a040ff);
+      transition: width 60ms;
+      pointer-events: none;
+    }
+    /* Labels below slider */
+    .slider-ticks {
+      display: flex; justify-content: space-between;
+      width: 140px;
+    }
+    .slider-tick {
+      font-size: 8px; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── Frequency Bands ── */
     #bands { pointer-events: none; display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
     .band-row { display: flex; align-items: center; gap: 10px; }
-    .band-label {
-      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
-      color: rgba(255,255,255,0.22); width: 40px; text-align: right;
-    }
+    .band-label { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.22); width: 40px; text-align: right; }
     .band-bar-track { width: 110px; height: 2px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
     .band-bar-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 70ms linear; }
     #fill-bass { background: #ff3a60; }
     #fill-mid  { background: #9933ff; }
     #fill-high { background: #33bfff; }
 
+    /* ── Stereo Indicator ── */
     #stereo {
       position: fixed; top: 50%; right: 28px; transform: translateY(-50%);
       z-index: 10; pointer-events: none;
       display: flex; flex-direction: column; align-items: center; gap: 7px;
     }
     #stereo-label { font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.18); }
-    #stereo-track {
-      width: 2px; height: 120px; background: rgba(255,255,255,0.07);
-      border-radius: 2px; position: relative;
-    }
+    #stereo-track { width: 2px; height: 120px; background: rgba(255,255,255,0.07); border-radius: 2px; position: relative; }
     #stereo-center { width: 6px; height: 1px; background: rgba(255,255,255,0.18); position: absolute; left: -2px; top: 50%; }
     #stereo-fill {
       position: absolute; left: 0; right: 0;
       background: linear-gradient(to top, #33bfff, #9933ff);
-      border-radius: 2px; transition: top 90ms, height 90ms;
-      top: 50%; height: 0%;
+      border-radius: 2px; transition: top 90ms, height 90ms; top: 50%; height: 0%;
     }
 
+    /* ── Beat Flash overlay ── */
+    #beat-flash {
+      position: fixed; inset: 0; z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(ellipse at center, rgba(160,60,255,0.18) 0%, transparent 70%);
+      transition: opacity 80ms;
+    }
+
+    /* ── Hint ── */
     #hint {
       position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
       text-align: center; pointer-events: none; z-index: 5; transition: opacity 1.2s;
     }
-    #hint h1 { font-size: 11px; font-weight: 400; letter-spacing: 0.42em; text-transform: uppercase; color: rgba(255,255,255,0.16); margin-bottom: 10px; }
-    #hint p { font-size: 10px; letter-spacing: 0.14em; color: rgba(255,255,255,0.09); text-transform: uppercase; }
+    #hint h1 { font-size: 11px; font-weight: 400; letter-spacing: 0.42em; text-transform: uppercase; color: rgba(255,255,255,0.14); margin-bottom: 10px; }
+    #hint p { font-size: 10px; letter-spacing: 0.14em; color: rgba(255,255,255,0.08); text-transform: uppercase; }
   </style>
+
   <script type="importmap">
   {
     "imports": {
@@ -94,12 +194,14 @@
 <body>
 
 <div id="canvas-container"></div>
+<div id="beat-flash"></div>
 
 <div id="hint">
   <h1>Cymatics</h1>
   <p>Sound Made Visible</p>
 </div>
 
+<!-- Stereo column -->
 <div id="stereo">
   <div id="stereo-label">L &nbsp; R</div>
   <div id="stereo-track">
@@ -108,24 +210,47 @@
   </div>
 </div>
 
+<!-- Bottom UI -->
 <div id="ui">
+
+  <!-- Left: Upload + Player -->
   <div id="ui-left">
     <span id="wordmark">Cymatics / Sound Made Visible</span>
     <label id="upload-btn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
       </svg>
       Audio laden (.mp3 / .wav)
       <input type="file" id="file-input" accept="audio/*">
     </label>
     <audio id="player" controls></audio>
   </div>
+
+  <!-- Center: Threshold Slider -->
+  <div id="threshold-panel">
+    <span class="ctrl-label">Beat Threshold</span>
+    <div class="slider-wrap">
+      <div class="slider-value" id="thresh-display">0.55</div>
+      <div id="thresh-track-bg">
+        <div id="thresh-track-fill" style="width:55%"></div>
+      </div>
+      <input type="range" id="thresh-slider" min="10" max="95" value="55" step="1">
+      <div class="slider-ticks">
+        <span class="slider-tick">Sensitiv</span>
+        <span class="slider-tick">Hart</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Frequency Bands -->
   <div id="bands">
     <div class="band-row"><span class="band-label">Bass</span><div class="band-bar-track"><div class="band-bar-fill" id="fill-bass"></div></div></div>
     <div class="band-row"><span class="band-label">Mid</span><div class="band-bar-track"><div class="band-bar-fill" id="fill-mid"></div></div></div>
     <div class="band-row"><span class="band-label">High</span><div class="band-bar-track"><div class="band-bar-fill" id="fill-high"></div></div></div>
   </div>
+
 </div>
 
 <script type="module">
@@ -135,14 +260,29 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
+// ─── Threshold Slider ────────────────────────────────────────────────────────
+let THRESH = 0.55;
+
+const slider      = document.getElementById('thresh-slider');
+const threshDisp  = document.getElementById('thresh-display');
+const trackFill   = document.getElementById('thresh-track-fill');
+
+slider.addEventListener('input', () => {
+  const v = parseInt(slider.value);
+  THRESH = v / 100;
+  threshDisp.textContent = THRESH.toFixed(2);
+  trackFill.style.width = v + '%';
+});
+
 // ─── Audio ──────────────────────────────────────────────────────────────────
 let audioCtx, analyserL, analyserR, dataL, dataR;
 let isReady = false;
 let sBass=0, sMid=0, sHigh=0, sPan=0, prevBass=0, shockwave=0;
 
-const player   = document.getElementById('player');
-const fileInput= document.getElementById('file-input');
-const hint     = document.getElementById('hint');
+const player    = document.getElementById('player');
+const fileInput = document.getElementById('file-input');
+const hint      = document.getElementById('hint');
+const beatFlash = document.getElementById('beat-flash');
 
 fileInput.addEventListener('change', e => {
   const f = e.target.files[0];
@@ -153,17 +293,17 @@ fileInput.addEventListener('change', e => {
 });
 player.addEventListener('play', () => { if (!audioCtx) initAudio(); });
 
-function initAudio(){
-  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+function initAudio() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const src = audioCtx.createMediaElementSource(player);
   const spl = audioCtx.createChannelSplitter(2);
   src.connect(spl);
 
-  analyserL = audioCtx.createAnalyser(); analyserL.fftSize=2048; analyserL.smoothingTimeConstant=0.78;
-  analyserR = audioCtx.createAnalyser(); analyserR.fftSize=2048; analyserR.smoothingTimeConstant=0.78;
+  analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 2048; analyserL.smoothingTimeConstant = 0.78;
+  analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 2048; analyserR.smoothingTimeConstant = 0.78;
 
-  spl.connect(analyserL,0);
-  spl.connect(analyserR,1);
+  spl.connect(analyserL, 0);
+  spl.connect(analyserR, 1);
   src.connect(audioCtx.destination);
 
   dataL = new Uint8Array(analyserL.frequencyBinCount);
@@ -171,14 +311,14 @@ function initAudio(){
   isReady = true;
 }
 
-function avg(arr,a,b){ let s=0; for(let i=a;i<b;i++) s+=arr[i]; return s/(b-a)/255; }
-function lerp(a,b,t){ return a+(b-a)*t; }
+function avg(arr, a, b) { let s=0; for(let i=a;i<b;i++) s+=arr[i]; return s/(b-a)/255; }
+function lerp(a, b, t)  { return a+(b-a)*t; }
 
 // ─── Renderer ───────────────────────────────────────────────────────────────
 const container = document.getElementById('canvas-container');
 const renderer  = new THREE.WebGLRenderer({ antialias:false, powerPreference:'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.25;
 container.appendChild(renderer.domElement);
@@ -186,41 +326,41 @@ container.appendChild(renderer.domElement);
 const scene  = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 500);
-camera.position.set(0,0,32);
+camera.position.set(0, 0, 32);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping=true; controls.dampingFactor=0.04;
-controls.enablePan=false; controls.minDistance=12; controls.maxDistance=80;
-controls.autoRotate=true; controls.autoRotateSpeed=0.3;
+controls.enableDamping = true; controls.dampingFactor = 0.04;
+controls.enablePan = false; controls.minDistance = 12; controls.maxDistance = 80;
+controls.autoRotate = true; controls.autoRotateSpeed = 0.3;
 
 // ─── Post-processing ────────────────────────────────────────────────────────
 const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene,camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight), 2.6, 0.42, 0.1);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.6, 0.42, 0.1);
 composer.addPass(bloom);
 
-// ─── Fibonacci Sphere Particles ─────────────────────────────────────────────
-const N = 80000;
-const pos  = new Float32Array(N*3);
-const norm = new Float32Array(N*3);
-const rand = new Float32Array(N);
-const PHI  = Math.PI*(3-Math.sqrt(5));
-const R0   = 9.0;
+// ─── Fibonacci Sphere ───────────────────────────────────────────────────────
+const N   = 80000;
+const pos = new Float32Array(N * 3);
+const nor = new Float32Array(N * 3);
+const rnd = new Float32Array(N);
+const PHI = Math.PI * (3 - Math.sqrt(5));
+const R0  = 9.0;
 
-for(let i=0;i<N;i++){
-  const y=1-(i/(N-1))*2;
-  const r=Math.sqrt(Math.max(0,1-y*y));
-  const t=PHI*i;
-  const nx=Math.cos(t)*r, ny=y, nz=Math.sin(t)*r;
-  norm[i*3]=nx; norm[i*3+1]=ny; norm[i*3+2]=nz;
+for (let i = 0; i < N; i++) {
+  const y  = 1 - (i / (N-1)) * 2;
+  const r  = Math.sqrt(Math.max(0, 1 - y*y));
+  const th = PHI * i;
+  const nx = Math.cos(th)*r, ny = y, nz = Math.sin(th)*r;
+  nor[i*3]=nx; nor[i*3+1]=ny; nor[i*3+2]=nz;
   pos[i*3]=nx*R0; pos[i*3+1]=ny*R0; pos[i*3+2]=nz*R0;
-  rand[i]=Math.random();
+  rnd[i] = Math.random();
 }
 
 const geo = new THREE.BufferGeometry();
-geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
-geo.setAttribute('aNormal',  new THREE.BufferAttribute(norm,3));
-geo.setAttribute('aRandom',  new THREE.BufferAttribute(rand,1));
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('aNormal',  new THREE.BufferAttribute(nor, 3));
+geo.setAttribute('aRandom',  new THREE.BufferAttribute(rnd, 1));
 
 // ─── Shaders ────────────────────────────────────────────────────────────────
 const vert = `
@@ -261,31 +401,19 @@ float snoise(vec3 v){
 void main(){
   vec3 n=normalize(aNormal);
   float t=uTime*0.22;
-
   float n1=snoise(n*(0.85+uMid*1.3)+vec3(t,t*0.65,t*0.4));
   float n2=snoise(n*(2.1+uHigh*1.8)+vec3(-t*0.55,t*1.1,aRandom*4.));
   float n3=snoise(n*4.5+vec3(aRandom,t*0.3,t*0.8));
+  float disp=uBass*5.8+n1*uMid*4.2+n2*uHigh*2.8+n3*0.3;
 
-  float disp = uBass*5.8
-             + n1*uMid*4.2
-             + n2*uHigh*2.8
-             + n3*0.3;
-
-  // Shockwave ring
   float waveFront=1.0-uShockwave;
-  float lat=n.y;
-  float ring=smoothstep(0.2,0.0,abs(lat-(waveFront*2.-1.)))*uShockwave*7.0;
+  float ring=smoothstep(0.2,0.0,abs(n.y-(waveFront*2.-1.)))*uShockwave*7.0;
   disp+=ring;
-
-  // Stereo lean
   disp+=uPan*2.8*n.x;
 
-  vDisp=disp;
-  vPan=uPan;
-
+  vDisp=disp; vPan=uPan;
   vec3 p=n*(uBaseR+disp);
   vec4 mv=modelViewMatrix*vec4(p,1.);
-
   float energy=0.45+uBass*1.6+uHigh*1.3;
   gl_PointSize=clamp(energy*(300./-mv.z),0.4,6.5);
   gl_Position=projectionMatrix*mv;
@@ -302,24 +430,17 @@ void main(){
   float d=length(uv);
   if(d>0.5) discard;
   float alpha=smoothstep(0.5,0.06,d);
-
   float t=clamp(vDisp/9.5,0.,1.);
-
-  // Palette: deep navy → electric blue → hot magenta → near-white
   vec3 c0=vec3(0.03,0.04,0.20);
   vec3 c1=vec3(0.04,0.48,0.95);
   vec3 c2=vec3(0.90,0.04,0.58);
   vec3 c3=vec3(1.0,0.88,1.0);
-
   vec3 col;
   if(t<0.33)      col=mix(c0,c1,t/0.33);
   else if(t<0.70) col=mix(c1,c2,(t-0.33)/0.37);
   else            col=mix(c2,c3,(t-0.70)/0.30);
-
-  // Stereo tint
   if(vPan< -0.1) col=mix(col,vec3(0.0,0.25,0.9), min(-vPan*0.5,0.38));
   else if(vPan>0.1) col=mix(col,vec3(1.0,0.38,0.0),min(vPan*0.5,0.38));
-
   col+=vec3(uHigh*0.55);
   gl_FragColor=vec4(col,alpha*0.90);
 }
@@ -327,82 +448,91 @@ void main(){
 
 const mat = new THREE.ShaderMaterial({
   vertexShader: vert, fragmentShader: frag,
-  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
-  uniforms:{
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: {
     uTime:{value:0}, uBass:{value:0}, uMid:{value:0}, uHigh:{value:0},
     uPan:{value:0}, uShockwave:{value:0}, uBaseR:{value:R0}
   }
 });
-
-scene.add(new THREE.Points(geo,mat));
+scene.add(new THREE.Points(geo, mat));
 
 // ─── UI refs ────────────────────────────────────────────────────────────────
-const fillB=document.getElementById('fill-bass');
-const fillM=document.getElementById('fill-mid');
-const fillH=document.getElementById('fill-high');
-const sFill=document.getElementById('stereo-fill');
+const fillB   = document.getElementById('fill-bass');
+const fillM   = document.getElementById('fill-mid');
+const fillH   = document.getElementById('fill-high');
+const sFill   = document.getElementById('stereo-fill');
 
-window.addEventListener('resize',()=>{
-  camera.aspect=window.innerWidth/window.innerHeight;
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth,window.innerHeight);
-  composer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// ─── Loop ────────────────────────────────────────────────────────────────────
+// ─── Beat Flash helper ───────────────────────────────────────────────────────
+let flashTimeout = null;
+function triggerFlash() {
+  beatFlash.style.opacity = '1';
+  if (flashTimeout) clearTimeout(flashTimeout);
+  flashTimeout = setTimeout(() => { beatFlash.style.opacity = '0'; }, 80);
+}
+
+// ─── Animate ────────────────────────────────────────────────────────────────
 const clock = new THREE.Clock();
-const THRESH = 0.55; // beat detection threshold — not too sensitive
 
-function tick(){
+function tick() {
   requestAnimationFrame(tick);
-  const el=clock.getElapsedTime();
-  let bass=0,mid=0,high=0,pan=0;
+  const el = clock.getElapsedTime();
+  let bass=0, mid=0, high=0, pan=0;
 
-  if(isReady){
+  if (isReady) {
     analyserL.getByteFrequencyData(dataL);
     analyserR.getByteFrequencyData(dataR);
-    const comb=new Uint8Array(dataL.length);
-    let tL=0,tR=0;
-    for(let i=0;i<comb.length;i++){
-      comb[i]=(dataL[i]+dataR[i])*0.5;
-      tL+=dataL[i]; tR+=dataR[i];
+    const comb = new Uint8Array(dataL.length);
+    let tL=0, tR=0;
+    for (let i=0; i<comb.length; i++) {
+      comb[i] = (dataL[i]+dataR[i]) * 0.5;
+      tL += dataL[i]; tR += dataR[i];
     }
-    bass=avg(comb,1,8);
-    mid =avg(comb,8,80);
-    high=avg(comb,80,300);
-    const tot=tL+tR;
-    pan=tot>0?(tR-tL)/tot:0;
+    bass = avg(comb, 1,   8);
+    mid  = avg(comb, 8,   80);
+    high = avg(comb, 80,  300);
+    const tot = tL + tR;
+    pan = tot > 0 ? (tR - tL) / tot : 0;
 
-    if(bass>THRESH && prevBass<=THRESH) shockwave=1.0;
-    prevBass=bass;
+    // Beat detection using live THRESH from slider
+    if (bass > THRESH && prevBass <= THRESH) {
+      shockwave = 1.0;
+      triggerFlash();
+    }
+    prevBass = bass;
   }
 
-  sBass=lerp(sBass,bass,0.12);
-  sMid =lerp(sMid, mid, 0.12);
-  sHigh=lerp(sHigh,high,0.15);
-  sPan =lerp(sPan, pan, 0.07);
-  shockwave*=0.93;
+  sBass = lerp(sBass, bass, 0.12);
+  sMid  = lerp(sMid,  mid,  0.12);
+  sHigh = lerp(sHigh, high, 0.15);
+  sPan  = lerp(sPan,  pan,  0.07);
+  shockwave *= 0.93;
 
-  mat.uniforms.uTime.value=el;
-  mat.uniforms.uBass.value=sBass;
-  mat.uniforms.uMid.value=sMid;
-  mat.uniforms.uHigh.value=sHigh;
-  mat.uniforms.uPan.value=sPan;
-  mat.uniforms.uShockwave.value=shockwave;
+  mat.uniforms.uTime.value     = el;
+  mat.uniforms.uBass.value     = sBass;
+  mat.uniforms.uMid.value      = sMid;
+  mat.uniforms.uHigh.value     = sHigh;
+  mat.uniforms.uPan.value      = sPan;
+  mat.uniforms.uShockwave.value = shockwave;
 
-  bloom.strength=2.0+sBass*2.2;
-  bloom.radius  =0.32+sMid*0.28;
-
-  controls.autoRotateSpeed=0.25+sBass*1.6;
+  bloom.strength = 2.0 + sBass * 2.2;
+  bloom.radius   = 0.32 + sMid * 0.28;
+  controls.autoRotateSpeed = 0.25 + sBass * 1.6;
   controls.update();
 
-  fillB.style.width=(sBass*100).toFixed(1)+'%';
-  fillM.style.width=(sMid *100).toFixed(1)+'%';
-  fillH.style.width=(sHigh*100).toFixed(1)+'%';
+  fillB.style.width = (sBass * 100).toFixed(1) + '%';
+  fillM.style.width = (sMid  * 100).toFixed(1) + '%';
+  fillH.style.width = (sHigh * 100).toFixed(1) + '%';
 
-  const barH=Math.abs(sPan)*48;
-  if(sPan>=0){ sFill.style.top=(50-barH)+'%'; sFill.style.height=barH+'%'; }
-  else       { sFill.style.top='50%';          sFill.style.height=barH+'%'; }
+  const barH = Math.abs(sPan) * 48;
+  if (sPan >= 0) { sFill.style.top = (50-barH)+'%'; sFill.style.height = barH+'%'; }
+  else           { sFill.style.top = '50%';          sFill.style.height = barH+'%'; }
 
   composer.render();
 }
