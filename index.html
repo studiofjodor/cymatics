@@ -20,13 +20,12 @@
     #ui {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
       padding: 28px 36px;
-      display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
-      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 100%);
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 32px;
+      background: linear-gradient(to top, rgba(0,0,0,0.90) 0%, transparent 100%);
       pointer-events: none;
     }
     #ui-left { pointer-events: all; display: flex; flex-direction: column; gap: 14px; }
     #wordmark { font-size: 11px; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.28); }
-
     #upload-btn {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 12px 22px;
@@ -44,99 +43,97 @@
       opacity: 0.55; filter: invert(1); border-radius: 20px;
     }
 
-    /* ── Threshold Panel ── */
-    #threshold-panel {
+    /* ── Controls Group (both sliders) ── */
+    #controls {
       pointer-events: all;
       display: flex;
+      gap: 32px;
+      align-items: flex-end;
+    }
+
+    .ctrl-block {
+      display: flex;
       flex-direction: column;
-      gap: 8px;
       align-items: center;
+      gap: 8px;
     }
     .ctrl-label {
       font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
       color: rgba(255,255,255,0.28); text-align: center;
     }
-
-    /* Custom range slider */
-    .slider-wrap {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    .slider-value {
-      font-size: 18px;
-      font-weight: 200;
-      letter-spacing: 0.05em;
-      color: rgba(255,255,255,0.75);
+    .ctrl-value {
+      font-size: 20px; font-weight: 200; letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.82);
       font-variant-numeric: tabular-nums;
-      min-width: 36px;
-      text-align: center;
+      min-width: 38px; text-align: center;
+      line-height: 1;
     }
-    input[type="range"]#thresh-slider {
+
+    /* Slider base */
+    .ctrl-slider {
+      -webkit-appearance: none; appearance: none;
+      width: 130px; height: 2px;
+      background: transparent; outline: none; cursor: pointer;
+    }
+    .ctrl-slider::-webkit-slider-runnable-track {
+      height: 2px; border-radius: 2px;
+      background: rgba(255,255,255,0.10);
+    }
+    .ctrl-slider::-moz-range-track {
+      height: 2px; border-radius: 2px;
+      background: rgba(255,255,255,0.10);
+    }
+    .ctrl-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
-      appearance: none;
-      width: 140px;
-      height: 2px;
-      background: transparent;
-      outline: none;
-      cursor: pointer;
-      position: relative;
-    }
-    /* Track */
-    input[type="range"]#thresh-slider::-webkit-slider-runnable-track {
-      height: 2px;
-      border-radius: 2px;
-      background: rgba(255,255,255,0.12);
-    }
-    input[type="range"]#thresh-slider::-moz-range-track {
-      height: 2px;
-      border-radius: 2px;
-      background: rgba(255,255,255,0.12);
-    }
-    /* Thumb */
-    input[type="range"]#thresh-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      background: #fff;
-      margin-top: -6px;
-      box-shadow: 0 0 10px rgba(160,80,255,0.9), 0 0 22px rgba(160,80,255,0.45);
+      width: 14px; height: 14px; border-radius: 50%; background: #fff; margin-top: -6px;
       transition: box-shadow 150ms;
     }
-    input[type="range"]#thresh-slider:hover::-webkit-slider-thumb {
-      box-shadow: 0 0 14px rgba(160,80,255,1.0), 0 0 30px rgba(160,80,255,0.65);
+    .ctrl-slider::-moz-range-thumb {
+      width: 14px; height: 14px; border: none; border-radius: 50%; background: #fff;
     }
-    input[type="range"]#thresh-slider::-moz-range-thumb {
-      width: 14px; height: 14px; border: none;
-      border-radius: 50%; background: #fff;
+
+    /* Threshold thumb: purple glow */
+    #thresh-slider::-webkit-slider-thumb {
       box-shadow: 0 0 10px rgba(160,80,255,0.9), 0 0 22px rgba(160,80,255,0.45);
     }
-    /* Filled track (via CSS gradient trick) */
-    #thresh-track-bg {
-      position: relative;
-      width: 140px;
-      height: 2px;
-      border-radius: 2px;
-      background: rgba(255,255,255,0.1);
+    #thresh-slider:hover::-webkit-slider-thumb {
+      box-shadow: 0 0 16px rgba(160,80,255,1.0), 0 0 32px rgba(160,80,255,0.6);
+    }
+    #thresh-slider::-moz-range-thumb { box-shadow: 0 0 10px rgba(160,80,255,0.9); }
+
+    /* Sensitivity thumb: cyan glow */
+    #sens-slider::-webkit-slider-thumb {
+      box-shadow: 0 0 10px rgba(0,200,255,0.9), 0 0 22px rgba(0,200,255,0.45);
+    }
+    #sens-slider:hover::-webkit-slider-thumb {
+      box-shadow: 0 0 16px rgba(0,200,255,1.0), 0 0 32px rgba(0,200,255,0.6);
+    }
+    #sens-slider::-moz-range-thumb { box-shadow: 0 0 10px rgba(0,200,255,0.9); }
+
+    /* Filled track */
+    .track-wrap {
+      position: relative; width: 130px; height: 2px;
+      border-radius: 2px; background: rgba(255,255,255,0.09);
       margin-bottom: -2px;
     }
-    #thresh-track-fill {
+    .track-fill {
       position: absolute; top:0; left:0; height:100%;
-      border-radius: 2px;
-      background: linear-gradient(to right, #5533ff, #a040ff);
+      border-radius: 2px; pointer-events: none;
       transition: width 60ms;
-      pointer-events: none;
     }
-    /* Labels below slider */
+    #thresh-fill { background: linear-gradient(to right, #5533ff, #a040ff); }
+    #sens-fill   { background: linear-gradient(to right, #0088cc, #00d4ff); }
+
     .slider-ticks {
-      display: flex; justify-content: space-between;
-      width: 140px;
+      display: flex; justify-content: space-between; width: 130px;
     }
-    .slider-tick {
-      font-size: 8px; letter-spacing: 0.1em;
-      color: rgba(255,255,255,0.2);
+    .slider-tick { font-size: 8px; letter-spacing: 0.08em; color: rgba(255,255,255,0.18); }
+
+    /* Divider between sliders */
+    .ctrl-divider {
+      width: 1px; height: 60px;
+      background: rgba(255,255,255,0.08);
+      align-self: center;
     }
 
     /* ── Frequency Bands ── */
@@ -164,12 +161,10 @@
       border-radius: 2px; transition: top 90ms, height 90ms; top: 50%; height: 0%;
     }
 
-    /* ── Beat Flash overlay ── */
+    /* ── Beat Flash ── */
     #beat-flash {
-      position: fixed; inset: 0; z-index: 2;
-      pointer-events: none;
-      opacity: 0;
-      background: radial-gradient(ellipse at center, rgba(160,60,255,0.18) 0%, transparent 70%);
+      position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0;
+      background: radial-gradient(ellipse at center, rgba(160,60,255,0.16) 0%, transparent 70%);
       transition: opacity 80ms;
     }
 
@@ -201,7 +196,6 @@
   <p>Sound Made Visible</p>
 </div>
 
-<!-- Stereo column -->
 <div id="stereo">
   <div id="stereo-label">L &nbsp; R</div>
   <div id="stereo-track">
@@ -210,7 +204,6 @@
   </div>
 </div>
 
-<!-- Bottom UI -->
 <div id="ui">
 
   <!-- Left: Upload + Player -->
@@ -228,20 +221,39 @@
     <audio id="player" controls></audio>
   </div>
 
-  <!-- Center: Threshold Slider -->
-  <div id="threshold-panel">
-    <span class="ctrl-label">Beat Threshold</span>
-    <div class="slider-wrap">
-      <div class="slider-value" id="thresh-display">0.55</div>
-      <div id="thresh-track-bg">
-        <div id="thresh-track-fill" style="width:55%"></div>
+  <!-- Center: Both Sliders -->
+  <div id="controls">
+
+    <!-- Sensitivity -->
+    <div class="ctrl-block">
+      <span class="ctrl-label">Sensitivity</span>
+      <div class="ctrl-value" id="sens-display">0.50</div>
+      <div class="track-wrap">
+        <div class="track-fill" id="sens-fill" style="width:50%"></div>
       </div>
-      <input type="range" id="thresh-slider" min="10" max="95" value="55" step="1">
+      <input type="range" class="ctrl-slider" id="sens-slider" min="5" max="100" value="50" step="1">
+      <div class="slider-ticks">
+        <span class="slider-tick">Schwach</span>
+        <span class="slider-tick">Voll</span>
+      </div>
+    </div>
+
+    <div class="ctrl-divider"></div>
+
+    <!-- Beat Threshold -->
+    <div class="ctrl-block">
+      <span class="ctrl-label">Beat Threshold</span>
+      <div class="ctrl-value" id="thresh-display">0.55</div>
+      <div class="track-wrap">
+        <div class="track-fill" id="thresh-fill" style="width:55%"></div>
+      </div>
+      <input type="range" class="ctrl-slider" id="thresh-slider" min="10" max="95" value="55" step="1">
       <div class="slider-ticks">
         <span class="slider-tick">Sensitiv</span>
         <span class="slider-tick">Hart</span>
       </div>
     </div>
+
   </div>
 
   <!-- Right: Frequency Bands -->
@@ -260,18 +272,28 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-// ─── Threshold Slider ────────────────────────────────────────────────────────
-let THRESH = 0.55;
+// ─── Slider Controls ─────────────────────────────────────────────────────────
+let THRESH = 0.55;   // beat detection crossing point
+let SENS   = 0.50;   // global multiplier on all band values → controls color range
 
-const slider      = document.getElementById('thresh-slider');
-const threshDisp  = document.getElementById('thresh-display');
-const trackFill   = document.getElementById('thresh-track-fill');
+const threshSlider  = document.getElementById('thresh-slider');
+const threshDisplay = document.getElementById('thresh-display');
+const threshFill    = document.getElementById('thresh-fill');
 
-slider.addEventListener('input', () => {
-  const v = parseInt(slider.value);
-  THRESH = v / 100;
-  threshDisp.textContent = THRESH.toFixed(2);
-  trackFill.style.width = v + '%';
+const sensSlider    = document.getElementById('sens-slider');
+const sensDisplay   = document.getElementById('sens-display');
+const sensFill      = document.getElementById('sens-fill');
+
+threshSlider.addEventListener('input', () => {
+  THRESH = parseInt(threshSlider.value) / 100;
+  threshDisplay.textContent = THRESH.toFixed(2);
+  threshFill.style.width = threshSlider.value + '%';
+});
+
+sensSlider.addEventListener('input', () => {
+  SENS = parseInt(sensSlider.value) / 100;
+  sensDisplay.textContent = SENS.toFixed(2);
+  sensFill.style.width = sensSlider.value + '%';
 });
 
 // ─── Audio ──────────────────────────────────────────────────────────────────
@@ -298,14 +320,10 @@ function initAudio() {
   const src = audioCtx.createMediaElementSource(player);
   const spl = audioCtx.createChannelSplitter(2);
   src.connect(spl);
-
   analyserL = audioCtx.createAnalyser(); analyserL.fftSize = 2048; analyserL.smoothingTimeConstant = 0.78;
   analyserR = audioCtx.createAnalyser(); analyserR.fftSize = 2048; analyserR.smoothingTimeConstant = 0.78;
-
-  spl.connect(analyserL, 0);
-  spl.connect(analyserR, 1);
+  spl.connect(analyserL, 0); spl.connect(analyserR, 1);
   src.connect(audioCtx.destination);
-
   dataL = new Uint8Array(analyserL.frequencyBinCount);
   dataR = new Uint8Array(analyserR.frequencyBinCount);
   isReady = true;
@@ -329,9 +347,9 @@ const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHei
 camera.position.set(0, 0, 32);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; controls.dampingFactor = 0.04;
-controls.enablePan = false; controls.minDistance = 12; controls.maxDistance = 80;
-controls.autoRotate = true; controls.autoRotateSpeed = 0.3;
+controls.enableDamping=true; controls.dampingFactor=0.04;
+controls.enablePan=false; controls.minDistance=12; controls.maxDistance=80;
+controls.autoRotate=true; controls.autoRotateSpeed=0.3;
 
 // ─── Post-processing ────────────────────────────────────────────────────────
 const composer = new EffectComposer(renderer);
@@ -339,7 +357,7 @@ composer.addPass(new RenderPass(scene, camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.6, 0.42, 0.1);
 composer.addPass(bloom);
 
-// ─── Fibonacci Sphere ───────────────────────────────────────────────────────
+// ─── Fibonacci Sphere Particles ─────────────────────────────────────────────
 const N   = 80000;
 const pos = new Float32Array(N * 3);
 const nor = new Float32Array(N * 3);
@@ -405,12 +423,10 @@ void main(){
   float n2=snoise(n*(2.1+uHigh*1.8)+vec3(-t*0.55,t*1.1,aRandom*4.));
   float n3=snoise(n*4.5+vec3(aRandom,t*0.3,t*0.8));
   float disp=uBass*5.8+n1*uMid*4.2+n2*uHigh*2.8+n3*0.3;
-
   float waveFront=1.0-uShockwave;
   float ring=smoothstep(0.2,0.0,abs(n.y-(waveFront*2.-1.)))*uShockwave*7.0;
   disp+=ring;
   disp+=uPan*2.8*n.x;
-
   vDisp=disp; vPan=uPan;
   vec3 p=n*(uBaseR+disp);
   vec4 mv=modelViewMatrix*vec4(p,1.);
@@ -439,7 +455,7 @@ void main(){
   if(t<0.33)      col=mix(c0,c1,t/0.33);
   else if(t<0.70) col=mix(c1,c2,(t-0.33)/0.37);
   else            col=mix(c2,c3,(t-0.70)/0.30);
-  if(vPan< -0.1) col=mix(col,vec3(0.0,0.25,0.9), min(-vPan*0.5,0.38));
+  if(vPan< -0.1) col=mix(col,vec3(0.0,0.25,0.9),min(-vPan*0.5,0.38));
   else if(vPan>0.1) col=mix(col,vec3(1.0,0.38,0.0),min(vPan*0.5,0.38));
   col+=vec3(uHigh*0.55);
   gl_FragColor=vec4(col,alpha*0.90);
@@ -451,16 +467,16 @@ const mat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
   uniforms: {
     uTime:{value:0}, uBass:{value:0}, uMid:{value:0}, uHigh:{value:0},
-    uPan:{value:0}, uShockwave:{value:0}, uBaseR:{value:R0}
+    uPan:{value:0},  uShockwave:{value:0}, uBaseR:{value:R0}
   }
 });
 scene.add(new THREE.Points(geo, mat));
 
 // ─── UI refs ────────────────────────────────────────────────────────────────
-const fillB   = document.getElementById('fill-bass');
-const fillM   = document.getElementById('fill-mid');
-const fillH   = document.getElementById('fill-high');
-const sFill   = document.getElementById('stereo-fill');
+const fillB = document.getElementById('fill-bass');
+const fillM = document.getElementById('fill-mid');
+const fillH = document.getElementById('fill-high');
+const sFill = document.getElementById('stereo-fill');
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -469,7 +485,7 @@ window.addEventListener('resize', () => {
   composer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// ─── Beat Flash helper ───────────────────────────────────────────────────────
+// ─── Beat Flash ──────────────────────────────────────────────────────────────
 let flashTimeout = null;
 function triggerFlash() {
   beatFlash.style.opacity = '1';
@@ -477,13 +493,14 @@ function triggerFlash() {
   flashTimeout = setTimeout(() => { beatFlash.style.opacity = '0'; }, 80);
 }
 
-// ─── Animate ────────────────────────────────────────────────────────────────
+// ─── Animate ─────────────────────────────────────────────────────────────────
 const clock = new THREE.Clock();
 
 function tick() {
   requestAnimationFrame(tick);
   const el = clock.getElapsedTime();
-  let bass=0, mid=0, high=0, pan=0;
+
+  let rawBass=0, rawMid=0, rawHigh=0, pan=0;
 
   if (isReady) {
     analyserL.getByteFrequencyData(dataL);
@@ -494,38 +511,47 @@ function tick() {
       comb[i] = (dataL[i]+dataR[i]) * 0.5;
       tL += dataL[i]; tR += dataR[i];
     }
-    bass = avg(comb, 1,   8);
-    mid  = avg(comb, 8,   80);
-    high = avg(comb, 80,  300);
+    rawBass = avg(comb, 1,  8);
+    rawMid  = avg(comb, 8,  80);
+    rawHigh = avg(comb, 80, 300);
     const tot = tL + tR;
     pan = tot > 0 ? (tR - tL) / tot : 0;
 
-    // Beat detection using live THRESH from slider
-    if (bass > THRESH && prevBass <= THRESH) {
+    // Beat detection uses RAW bass vs THRESH (unaffected by sensitivity)
+    if (rawBass > THRESH && prevBass <= THRESH) {
       shockwave = 1.0;
       triggerFlash();
     }
-    prevBass = bass;
+    prevBass = rawBass;
   }
 
-  sBass = lerp(sBass, bass, 0.12);
-  sMid  = lerp(sMid,  mid,  0.12);
-  sHigh = lerp(sHigh, high, 0.15);
-  sPan  = lerp(sPan,  pan,  0.07);
+  // Smooth raw values
+  sBass = lerp(sBass, rawBass, 0.12);
+  sMid  = lerp(sMid,  rawMid,  0.12);
+  sHigh = lerp(sHigh, rawHigh, 0.15);
+  sPan  = lerp(sPan,  pan,     0.07);
   shockwave *= 0.93;
 
-  mat.uniforms.uTime.value     = el;
-  mat.uniforms.uBass.value     = sBass;
-  mat.uniforms.uMid.value      = sMid;
-  mat.uniforms.uHigh.value     = sHigh;
-  mat.uniforms.uPan.value      = sPan;
+  // Apply SENSITIVITY as multiplier before sending to shader
+  // This compresses the full band range so the color palette stays visible
+  const scaledBass = Math.min(sBass * SENS * 2.0, 1.0);
+  const scaledMid  = Math.min(sMid  * SENS * 2.0, 1.0);
+  const scaledHigh = Math.min(sHigh * SENS * 2.0, 1.0);
+
+  mat.uniforms.uTime.value      = el;
+  mat.uniforms.uBass.value      = scaledBass;
+  mat.uniforms.uMid.value       = scaledMid;
+  mat.uniforms.uHigh.value      = scaledHigh;
+  mat.uniforms.uPan.value       = sPan;
   mat.uniforms.uShockwave.value = shockwave;
 
-  bloom.strength = 2.0 + sBass * 2.2;
-  bloom.radius   = 0.32 + sMid * 0.28;
-  controls.autoRotateSpeed = 0.25 + sBass * 1.6;
+  bloom.strength = 1.8 + scaledBass * 2.4;
+  bloom.radius   = 0.30 + scaledMid  * 0.32;
+
+  controls.autoRotateSpeed = 0.25 + scaledBass * 1.6;
   controls.update();
 
+  // Frequency meters show RAW values (pre-sensitivity) so user can see true signal
   fillB.style.width = (sBass * 100).toFixed(1) + '%';
   fillM.style.width = (sMid  * 100).toFixed(1) + '%';
   fillH.style.width = (sHigh * 100).toFixed(1) + '%';
