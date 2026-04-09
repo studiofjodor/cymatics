@@ -351,7 +351,7 @@ controls.autoRotate=true; controls.autoRotateSpeed=ROT;
 // ─── Post-processing ──────────────────────────────────────────────────────────
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene,camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight), BLOOM, 0.42, 0.1);
+const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight), BLOOM, 0.42, 0.0);
 composer.addPass(bloom);
 
 // ─── Fibonacci Sphere ─────────────────────────────────────────────────────────
@@ -509,7 +509,7 @@ function tick(){
   mat.uniforms.uDisp.value     = DISP;   // displacement multiplier
 
   // BLOOM: base from slider + dynamic bass boost
-  bloom.strength = BLOOM + sB * 2.2;
+  bloom.strength = BLOOM * (1.0 + sB * 2.0);
   bloom.radius   = 0.30 + sM * 0.32;
 
   // ROT: base rotation from slider + bass boost
