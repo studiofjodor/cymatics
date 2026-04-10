@@ -297,7 +297,14 @@ bindSlider('rot-slider',    'rot-display',    'rot-fill',    v => { ROT    = (v/
 // ─── Audio ──────────────────────────────────────────────────────────────────
 let audioCtx, analyserL, analyserR, dataL, dataR;
 let isReady = false;
-let sBass=0, sMid=0, sHigh=0, sPan=0, prevBass=0, shockwave=0;
+let sBass=0, sMid=0, sHigh=0, sPan=0, shockwave=0;
+
+// Onset Detection — gleitender Verlauf
+const ONSET_HISTORY = 30;          // wie viele Frames zurückgeschaut wird
+const onsetBuffer   = new Float32Array(ONSET_HISTORY); // Ringpuffer
+let   onsetHead     = 0;           // aktueller Schreibindex
+let   onsetAvg      = 0;           // gleitender Durchschnitt
+let   onsetCooldown = 0;           // Sperrzeit nach einem Beat
 
 const player    = document.getElementById('player');
 const fileInput = document.getElementById('file-input');
@@ -484,8 +491,28 @@ function tick(){
     for(let i=0;i<comb.length;i++){ comb[i]=(dataL[i]+dataR[i])*0.5; tL+=dataL[i]; tR+=dataR[i]; }
     rawBass=avg(comb,1,8); rawMid=avg(comb,8,80); rawHigh=avg(comb,80,300);
     const tot=tL+tR; pan=tot>0?(tR-tL)/tot:0;
-    if(rawBass>THRESH && prevBass<=THRESH){ shockwave=1.0; triggerFlash(); }
-    prevBass=rawBass;
+
+    // ── Onset Detection ──────────────────────────────────────
+    // Schreibe aktuellen Bass-Wert in den Ringpuffer
+    onsetBuffer[onsetHead] = rawBass;
+    onsetHead = (onsetHead + 1) % ONSET_HISTORY;
+
+    // Berechne gleitenden Durchschnitt der letzten N Frames
+    onsetAvg = 0;
+    for (let k = 0; k < ONSET_HISTORY; k++) onsetAvg += onsetBuffer[k];
+    onsetAvg /= ONSET_HISTORY;
+
+    // Beat = aktueller Wert ist deutlich größer als der Durchschnitt
+    // THRESH dient jetzt als Multiplikator: wie viel % über dem Schnitt = Beat
+    const onsetRatio = 1.0 + THRESH * 1.5;   // z.B. 0.55 → 1.825× über Schnitt
+    onsetCooldown = Math.max(0, onsetCooldown - 1);
+
+    if (rawBass > onsetAvg * onsetRatio && rawBass > 0.08 && onsetCooldown === 0) {
+      shockwave = 1.0;
+      triggerFlash();
+      onsetCooldown = 18;   // ~0.3s Sperrzeit → kein Doppel-Trigger
+    }
+    // ─────────────────────────────────────────────────────
   }
 
   // SPEED controls lerp factor — "Reaction Speed"
