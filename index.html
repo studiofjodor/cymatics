@@ -300,7 +300,7 @@ let isReady = false;
 let sBass=0, sMid=0, sHigh=0, sPan=0, shockwave=0;
 
 // Onset Detection — gleitender Verlauf
-const ONSET_HISTORY = 10;          // wie viele Frames zurückgeschaut wird
+const ONSET_HISTORY = 30;          // wie viele Frames zurückgeschaut wird
 const onsetBuffer   = new Float32Array(ONSET_HISTORY); // Ringpuffer
 let   onsetHead     = 0;           // aktueller Schreibindex
 let   onsetAvg      = 0;           // gleitender Durchschnitt
