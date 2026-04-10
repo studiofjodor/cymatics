@@ -516,7 +516,7 @@ function tick(){
     rawAir     = avg(comb,185,350);
     rawHigh    = (rawHighMid+rawAir)*0.5;
     const tot=tL+tR; pan=tot>0?(tR-tL)/tot:0;
-    const kickBand = avg(comb, 2, 3);   // ~64–107 Hz — reiner Kick-Bereich
+    const kickBand = avg(comb, 1, 2);   // ~64–107 Hz — reiner Kick-Bereich
     if(kickBand>THRESH && prevBass<=THRESH){ shockwave=1.0; triggerFlash(); }
     prevBass=kickBand;
   }
