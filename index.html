@@ -297,7 +297,8 @@ bindSlider('rot-slider',    'rot-display',    'rot-fill',    v => { ROT    = (v/
 // ─── Audio ──────────────────────────────────────────────────────────────────
 let audioCtx, analyserL, analyserR, dataL, dataR;
 let isReady = false;
-let sSub=0,sBass=0,sLowMid=0,sMid=0,sHighMid=0,sAir=0,sHigh=0,sPan=0,shockwave=0;
+  
+let sSub=0,sBass=0,sLowMid=0,sMid=0,sHighMid=0,sAir=0,sHigh=0,sPan=0,prevBass=0,shockwave=0;
 
 const player    = document.getElementById('player');
 const fileInput = document.getElementById('file-input');
@@ -499,7 +500,7 @@ const clock=new THREE.Clock();
 function tick(){
   requestAnimationFrame(tick);
   const el=clock.getElapsedTime();
-  let rawBass=0,rawMid=0,rawHigh=0,pan=0;
+  let rawSub=0,rawBass=0,rawLowMid=0,rawMid=0,rawHighMid=0,rawAir=0,rawHigh=0,pan=0;
 
   if(isReady){
     analyserL.getByteFrequencyData(dataL);
@@ -507,30 +508,26 @@ function tick(){
     const comb=new Uint8Array(dataL.length);
     let tL=0,tR=0;
     for(let i=0;i<comb.length;i++){ comb[i]=(dataL[i]+dataR[i])*0.5; tL+=dataL[i]; tR+=dataR[i]; }
-        // 6 Bänder
-    const rawSub     = avg(comb,  1,  5);
-    const rawBass    = avg(comb,  5, 12);
-    const rawLowMid  = avg(comb, 12, 24);
-    const rawMid     = avg(comb, 24, 80);
-    const rawHighMid = avg(comb, 80,185);
-    const rawAir     = avg(comb,185,350);
-    const rawHigh    = (rawHighMid+rawAir)*0.5;
+    rawSub     = avg(comb,  1,  5);
+    rawBass    = avg(comb,  5, 12);
+    rawLowMid  = avg(comb, 12, 24);
+    rawMid     = avg(comb, 24, 80);
+    rawHighMid = avg(comb, 80,185);
+    rawAir     = avg(comb,185,350);
+    rawHigh    = (rawHighMid+rawAir)*0.5;
     const tot=tL+tR; pan=tot>0?(tR-tL)/tot:0;
     if(rawBass>THRESH && prevBass<=THRESH){ shockwave=1.0; triggerFlash(); }
     prevBass=rawBass;
   }
 
-  sSub    =lerp(sSub,    0,         SPEED);  // wird unten überschrieben
-  if(isReady){
-    sSub    =lerp(sSub,    typeof rawSub!=='undefined'    ?rawSub:0,     SPEED);
-  }
-  sBass   =lerp(sBass,   rawBass||0,  SPEED);
-  sLowMid =lerp(sLowMid, rawLowMid||0,SPEED);
-  sMid    =lerp(sMid,    rawMid||0,   SPEED);
-  sHighMid=lerp(sHighMid,rawHighMid||0,SPEED);
-  sAir    =lerp(sAir,    rawAir||0,   Math.min(SPEED*1.2,0.5));
+  sSub    =lerp(sSub,    rawSub,    SPEED);
+  sBass   =lerp(sBass,   rawBass,   SPEED);
+  sLowMid =lerp(sLowMid, rawLowMid, SPEED);
+  sMid    =lerp(sMid,    rawMid,    SPEED);
+  sHighMid=lerp(sHighMid,rawHighMid,SPEED);
+  sAir    =lerp(sAir,    rawAir,    Math.min(SPEED*1.2,0.5));
   sHigh   =(sHighMid+sAir)*0.5;
-  sPan    =lerp(sPan,    pan,         0.07);
+  sPan    =lerp(sPan,    pan,       0.07);
   shockwave*=0.93;
 
   const scale=v=>Math.min(v*SENS*2.0,1.0);
@@ -543,13 +540,14 @@ function tick(){
   mat.uniforms.uPan.value     =sPan;
   mat.uniforms.uShockwave.value=shockwave;
   mat.uniforms.uDisp.value    =DISP;
-
+  
   // BLOOM: base from slider + dynamic bass boost
-  bloom.strength = BLOOM * (1.0 + sB * 2.0);
-  bloom.radius   = 0.30 + sM * 0.32;
+  bloom.strength = BLOOM * (1.0 + scale(sBass) * 2.0);
+  bloom.radius   = 0.30 + scale(sMid) * 0.32;
+
 
   // ROT: base rotation from slider + bass boost
-  controls.autoRotateSpeed = ROT + sB * 1.6;
+  controls.autoRotateSpeed = ROT + scale(sBass) * 1.6;
   controls.update();
 
   fillB.style.width=(sBass*100).toFixed(1)+'%';
