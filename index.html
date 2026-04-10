@@ -541,7 +541,7 @@ function tick(){
   mat.uniforms.uShockwave.value=shockwave;
   mat.uniforms.uDisp.value    =DISP;
   mat.uniforms.uTime.value    = el;
-  mat.uniforms.uHigh.value    = scale(sAir);
+  mat.uniforms.uHigh.value    = (scale(sHighMid) + scale(sAir)) * 0.5;
   
   // BLOOM: base from slider + dynamic bass boost
   bloom.strength = BLOOM * (1.0 + scale(sBass) * 2.0);
