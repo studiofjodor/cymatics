@@ -297,14 +297,7 @@ bindSlider('rot-slider',    'rot-display',    'rot-fill',    v => { ROT    = (v/
 // ─── Audio ──────────────────────────────────────────────────────────────────
 let audioCtx, analyserL, analyserR, dataL, dataR;
 let isReady = false;
-let sBass=0, sMid=0, sHigh=0, sPan=0, shockwave=0;
-
-// Onset Detection — gleitender Verlauf
-const ONSET_HISTORY = 15;          // wie viele Frames zurückgeschaut wird
-const onsetBuffer   = new Float32Array(ONSET_HISTORY); // Ringpuffer
-let   onsetHead     = 0;           // aktueller Schreibindex
-let   onsetAvg      = 0;           // gleitender Durchschnitt
-let   onsetCooldown = 0;           // Sperrzeit nach einem Beat
+let sBass=0, sMid=0, sHigh=0, sPan=0, prevBass=0, shockwave=0;
 
 const player    = document.getElementById('player');
 const fileInput = document.getElementById('file-input');
@@ -491,45 +484,8 @@ function tick(){
     for(let i=0;i<comb.length;i++){ comb[i]=(dataL[i]+dataR[i])*0.5; tL+=dataL[i]; tR+=dataR[i]; }
     rawBass=avg(comb,1,8); rawMid=avg(comb,8,80); rawHigh=avg(comb,80,300);
     const tot=tL+tR; pan=tot>0?(tR-tL)/tot:0;
-
-    // ── Onset Detection ──────────────────────────────────────
-    // Schreibe aktuellen Bass-Wert in den Ringpuffer
-    onsetBuffer[onsetHead] = rawBass;
-    onsetHead = (onsetHead + 1) % ONSET_HISTORY;
-
-    // Berechne gleitenden Durchschnitt der letzten N Frames
-    onsetAvg = 0;
-    for (let k = 0; k < ONSET_HISTORY; k++) onsetAvg += onsetBuffer[k];
-    onsetAvg /= ONSET_HISTORY;
-
-    // Beat = aktueller Wert ist deutlich größer als der Durchschnitt
-    // THRESH dient jetzt als Multiplikator: wie viel % über dem Schnitt = Beat
-    // ── Onset Detection ──────────────────────────────────────
-// Separates, engeres Kick-Band: nur Bins 1–5 (~20–107 Hz)
-// Claps haben dort keine Energie → kein Fehlalarm
-const kickBand = avg(comb, 1, 5);
-
-// Ringpuffer mit Kick-Band befüllen (nicht rawBass)
-onsetBuffer[onsetHead] = kickBand;
-onsetHead = (onsetHead + 1) % ONSET_HISTORY;
-
-onsetAvg = 0;
-for (let k = 0; k < ONSET_HISTORY; k++) onsetAvg += onsetBuffer[k];
-onsetAvg /= ONSET_HISTORY;
-
-// Trigger wenn:
-// 1. Kick-Band deutlich über seinem eigenen Durchschnitt liegt
-// 2. Absoluter Mindestwert von 0.12 überschritten (kein Trigger bei Stille)
-// 3. Cooldown abgelaufen
-const onsetRatio  = 1.0 + THRESH * 1.2;  // niedrigerer Multiplikator → stabiler
-onsetCooldown = Math.max(0, onsetCooldown - 1);
-
-if (kickBand > onsetAvg * onsetRatio && kickBand > 0.12 && onsetCooldown === 0) {
-  shockwave = 1.0;
-  triggerFlash();
-  onsetCooldown = 22;   // ~370ms Sperrzeit bei 60fps
-}
-// ───────────────────────────────────────────────────────
+    if(rawBass>THRESH && prevBass<=THRESH){ shockwave=1.0; triggerFlash(); }
+    prevBass=rawBass;
   }
 
   // SPEED controls lerp factor — "Reaction Speed"
