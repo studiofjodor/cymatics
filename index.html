@@ -297,7 +297,7 @@ bindSlider('rot-slider',    'rot-display',    'rot-fill',    v => { ROT    = (v/
 // ─── Audio ──────────────────────────────────────────────────────────────────
 let audioCtx, analyserL, analyserR, dataL, dataR;
 let isReady = false;
-let sBass=0, sMid=0, sHigh=0, sPan=0, prevBass=0, shockwave=0;
+let sSub=0,sBass=0,sLowMid=0,sMid=0,sHighMid=0,sAir=0,sHigh=0,sPan=0,shockwave=0;
 
 const player    = document.getElementById('player');
 const fileInput = document.getElementById('file-input');
@@ -420,21 +420,26 @@ void main(){
 
 const frag = `
 precision highp float;
-uniform float uBass,uHigh,uPan;
+uniform float uSub,uBass,uLowMid,uMid,uHighMid,uAir,uPan;
 varying float vDisp,vPan;
 void main(){
-  vec2 uv=gl_PointCoord-0.5;float d=length(uv);
-  if(d>0.5)discard;
+  vec2 uv=gl_PointCoord-0.5; float d=length(uv);
+  if(d>0.5) discard;
   float alpha=smoothstep(0.5,0.06,d);
   float t=clamp(vDisp/9.5,0.,1.);
-  vec3 c0=vec3(0.03,0.04,0.20),c1=vec3(0.04,0.48,0.95),c2=vec3(0.90,0.04,0.58),c3=vec3(1.0,0.88,1.0);
-  vec3 col;
-  if(t<0.33)      col=mix(c0,c1,t/0.33);
-  else if(t<0.70) col=mix(c1,c2,(t-0.33)/0.37);
-  else            col=mix(c2,c3,(t-0.70)/0.30);
+  vec3 cSub    =vec3(0.30,0.00,0.50);
+  vec3 cBass   =vec3(0.85,0.04,0.30);
+  vec3 cLowMid =vec3(0.95,0.38,0.00);
+  vec3 cMid    =vec3(0.05,0.80,0.40);
+  vec3 cHighMid=vec3(0.04,0.48,0.95);
+  vec3 cAir    =vec3(0.85,0.95,1.00);
+  float total=uSub+uBass+uLowMid+uMid+uHighMid+uAir+0.001;
+  vec3 bandCol=(cSub*uSub+cBass*uBass+cLowMid*uLowMid+cMid*uMid+cHighMid*uHighMid+cAir*uAir)/total;
+  vec3 restCol=vec3(0.03,0.03,0.15);
+  vec3 col=mix(restCol,bandCol,smoothstep(0.0,0.6,t));
+  col=mix(col,vec3(1.0),smoothstep(0.75,1.0,t)*0.7);
   if(vPan< -0.1) col=mix(col,vec3(0.0,0.25,0.9),min(-vPan*0.5,0.38));
   else if(vPan>0.1) col=mix(col,vec3(1.0,0.38,0.0),min(vPan*0.5,0.38));
-  col+=vec3(uHigh*0.55);
   gl_FragColor=vec4(col,alpha*0.90);
 }`;
 
@@ -442,8 +447,8 @@ const mat = new THREE.ShaderMaterial({
   vertexShader:vert, fragmentShader:frag,
   transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
   uniforms:{
-    uTime:{value:0}, uBass:{value:0}, uMid:{value:0}, uHigh:{value:0},
-    uPan:{value:0},  uShockwave:{value:0}, uBaseR:{value:R0}, uDisp:{value:1.0}
+    uTime:{value:0}, uPan:{value:0}, uShockwave:{value:0}, uBaseR:{value:R0}, uDisp:{value:1.0},
+    uSub:{value:0}, uBass:{value:0}, uLowMid:{value:0}, uMid:{value:0}, uHighMid:{value:0}, uAir:{value:0}
   }
 });
 scene.add(new THREE.Points(geo,mat));
@@ -482,31 +487,42 @@ function tick(){
     const comb=new Uint8Array(dataL.length);
     let tL=0,tR=0;
     for(let i=0;i<comb.length;i++){ comb[i]=(dataL[i]+dataR[i])*0.5; tL+=dataL[i]; tR+=dataR[i]; }
-    rawBass=avg(comb,1,8); rawMid=avg(comb,8,80); rawHigh=avg(comb,80,300);
+        // 6 Bänder
+    const rawSub     = avg(comb,  1,  5);
+    const rawBass    = avg(comb,  5, 12);
+    const rawLowMid  = avg(comb, 12, 24);
+    const rawMid     = avg(comb, 24, 80);
+    const rawHighMid = avg(comb, 80,185);
+    const rawAir     = avg(comb,185,350);
+    const rawHigh    = (rawHighMid+rawAir)*0.5;
     const tot=tL+tR; pan=tot>0?(tR-tL)/tot:0;
     if(rawBass>THRESH && prevBass<=THRESH){ shockwave=1.0; triggerFlash(); }
     prevBass=rawBass;
   }
 
-  // SPEED controls lerp factor — "Reaction Speed"
-  sBass=lerp(sBass,rawBass,SPEED);
-  sMid =lerp(sMid, rawMid, SPEED);
-  sHigh=lerp(sHigh,rawHigh,Math.min(SPEED*1.2,0.5));
-  sPan =lerp(sPan, pan,    0.07);
+  sSub    =lerp(sSub,    0,         SPEED);  // wird unten überschrieben
+  if(isReady){
+    sSub    =lerp(sSub,    typeof rawSub!=='undefined'    ?rawSub:0,     SPEED);
+  }
+  sBass   =lerp(sBass,   rawBass||0,  SPEED);
+  sLowMid =lerp(sLowMid, rawLowMid||0,SPEED);
+  sMid    =lerp(sMid,    rawMid||0,   SPEED);
+  sHighMid=lerp(sHighMid,rawHighMid||0,SPEED);
+  sAir    =lerp(sAir,    rawAir||0,   Math.min(SPEED*1.2,0.5));
+  sHigh   =(sHighMid+sAir)*0.5;
+  sPan    =lerp(sPan,    pan,         0.07);
   shockwave*=0.93;
 
-  // Scale bands by SENS before shader
-  const sB=Math.min(sBass*SENS*2.0,1.0);
-  const sM=Math.min(sMid *SENS*2.0,1.0);
-  const sH=Math.min(sHigh*SENS*2.0,1.0);
-
-  mat.uniforms.uTime.value     = el;
-  mat.uniforms.uBass.value     = sB;
-  mat.uniforms.uMid.value      = sM;
-  mat.uniforms.uHigh.value     = sH;
-  mat.uniforms.uPan.value      = sPan;
-  mat.uniforms.uShockwave.value= shockwave;
-  mat.uniforms.uDisp.value     = DISP;   // displacement multiplier
+  const scale=v=>Math.min(v*SENS*2.0,1.0);
+  mat.uniforms.uSub.value     =scale(sSub);
+  mat.uniforms.uBass.value    =scale(sBass);
+  mat.uniforms.uLowMid.value  =scale(sLowMid);
+  mat.uniforms.uMid.value     =scale(sMid);
+  mat.uniforms.uHighMid.value =scale(sHighMid);
+  mat.uniforms.uAir.value     =scale(sAir);
+  mat.uniforms.uPan.value     =sPan;
+  mat.uniforms.uShockwave.value=shockwave;
+  mat.uniforms.uDisp.value    =DISP;
 
   // BLOOM: base from slider + dynamic bass boost
   bloom.strength = BLOOM * (1.0 + sB * 2.0);
