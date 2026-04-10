@@ -469,7 +469,7 @@ const mat = new THREE.ShaderMaterial({
   transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
   uniforms:{
     uTime:{value:0}, uPan:{value:0}, uShockwave:{value:0}, uBaseR:{value:R0}, uDisp:{value:1.0},
-    uSub:{value:0}, uBass:{value:0}, uLowMid:{value:0}, uMid:{value:0}, uHighMid:{value:0}, uAir:{value:0}
+    uSub:{value:0}, uBass:{value:0}, uLowMid:{value:0}, uMid:{value:0}, uHighMid:{value:0}, uAir:{value:0}, uHigh:{value:0}
   }
 });
 scene.add(new THREE.Points(geo,mat));
@@ -540,6 +540,8 @@ function tick(){
   mat.uniforms.uPan.value     =sPan;
   mat.uniforms.uShockwave.value=shockwave;
   mat.uniforms.uDisp.value    =DISP;
+  mat.uniforms.uTime.value    = el;
+  mat.uniforms.uHigh.value    = scale(sAir);
   
   // BLOOM: base from slider + dynamic bass boost
   bloom.strength = BLOOM * (1.0 + scale(sBass) * 2.0);
